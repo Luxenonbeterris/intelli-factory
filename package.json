@@ -1,0 +1,42 @@
+{
+  "name": "factory-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "start": "pnpm -r --parallel run dev",
+    "dev": "pnpm --parallel \"--filter server start\" \"--dir client pnpm dev\"",
+    "build": "echo 'Run pnpm --filter client build or setup server build'",
+    "lint": "eslint \"{client,server}/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"{client,server}/**/*.{js,jsx,ts,tsx,json,md}\"",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "eslint --max-warnings=0"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.25.0",
+    "eslint": "^9.25.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.5.3"
+  },
+  "dependencies": {
+    "@babel/eslint-parser": "^7.27.5"
+  }
+}
