@@ -1,15 +1,112 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role
+  createdAt DateTime @default(now())
+
+  factory          Factory?
+  customerRequests CustomerRequest[]
+  factoryOffers    FactoryOffer[]
+  logisticsOffers  LogisticOffer[]
+}
+
+enum Role {
+  CUSTOMER
+  FACTORY
+  LOGISTIC
+  MANAGER
+}
+
+model PositionCategory {
+  id   String @id @default(uuid())
+  name String @unique
+
+  factories Factory[]         @relation("FactoryCategories")
+  requests  CustomerRequest[]
+}
+
+model Factory {
+  id     String @id @default(uuid())
+  name   String
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  categories PositionCategory[] @relation("FactoryCategories")
+  offers     FactoryOffer[]
+}
+
+model CustomerRequest {
+  id          String           @id @default(uuid())
+  description String
+  quantity    Int
+  categoryId  String
+  category    PositionCategory @relation(fields: [categoryId], references: [id])
+  customerId  String
+  customer    User             @relation(fields: [customerId], references: [id])
+  createdAt   DateTime         @default(now())
+
+  offers FactoryOffer[]
+}
+
+model FactoryOffer {
+  id                String          @id @default(uuid())
+  price             Float
+  estimatedTimeDays Int
+  factoryId         String
+  factory           Factory         @relation(fields: [factoryId], references: [id])
+  requestId         String
+  request           CustomerRequest @relation(fields: [requestId], references: [id])
+
+  logisticsRequests LogisticsRequest[]
+  compiledOffers    CompiledOffer[]
+  User              User?              @relation(fields: [userId], references: [id])
+  userId            String?
+}
+
+model LogisticsRequest {
+  id             String       @id @default(uuid())
+  factoryOfferId String
+  factoryOffer   FactoryOffer @relation(fields: [factoryOfferId], references: [id])
+
+  logisticOffers LogisticOffer[]
+}
+
+model LogisticOffer {
+  id                 String           @id @default(uuid())
+  etaDays            Int
+  deliveryCost       Float
+  logisticsRequestId String
+  logisticsRequest   LogisticsRequest @relation(fields: [logisticsRequestId], references: [id])
+  logisticId         String
+  logistic           User             @relation(fields: [logisticId], references: [id])
+
+  compiledOffer CompiledOffer?
+}
+
+model CompiledOffer {
+  id              String        @id @default(uuid())
+  factoryOfferId  String
+  factoryOffer    FactoryOffer  @relation(fields: [factoryOfferId], references: [id])
+  logisticOfferId String        @unique
+  logisticOffer   LogisticOffer @relation(fields: [logisticOfferId], references: [id])
+
+  finalOffer FinalOffer?
+}
+
+model FinalOffer {
+  id              String        @id @default(uuid())
+  compiledOfferId String        @unique
+  compiledOffer   CompiledOffer @relation(fields: [compiledOfferId], references: [id])
+  confirmedAt     DateTime      @default(now())
 }
