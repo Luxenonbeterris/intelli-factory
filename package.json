@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "start": "pnpm -r --parallel run dev",
-    "dev": "pnpm --parallel \"--filter server start\" \"--dir client pnpm dev\"",
+    "dev": "pnpm --parallel \"--filter server dev\" \"--dir client pnpm dev\"",
     "build": "echo 'Run pnpm --filter client build or setup server build'",
     "lint": "eslint \"{client,server}/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"{client,server}/**/*.{js,jsx,ts,tsx,json,md}\"",
@@ -42,6 +42,7 @@
     "prettier": "^3.5.3"
   },
   "dependencies": {
-    "@babel/eslint-parser": "^7.27.5"
+    "@babel/eslint-parser": "^7.27.5",
+    "zod": "^4.0.5"
   }
 }

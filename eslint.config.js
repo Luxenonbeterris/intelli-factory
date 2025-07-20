@@ -62,6 +62,7 @@ export default [
         process: 'readonly',
         __dirname: 'readonly',
         require: 'readonly',
+        module: 'readonly',
       },
     },
     plugins: { '@typescript-eslint': tseslintPlugin, n: nodePlugin, import: importPlugin },
@@ -79,6 +80,42 @@ export default [
       'import/no-unresolved': 'error',
       'import/extensions': ['error', 'ignorePackages', { ts: 'never', tsx: 'never' }],
       'n/no-missing-import': 'off',
+    },
+  },
+
+  //server: Tests
+  {
+    files: ['server/tests/**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: './server/tsconfig.json',
+      },
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        test: 'readonly',
+      },
+    },
+    plugins: { '@typescript-eslint': tseslintPlugin, n: nodePlugin },
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['warn'],
+      'n/no-unpublished-import': ['error', { allowModules: ['supertest'] }],
+    },
+  },
+
+  // server: CommonJS config files (e.g., jest.config.js)
+  {
+    files: ['server/**/*.config.js'],
+    languageOptions: {
+      sourceType: 'script',
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+      },
     },
   },
 

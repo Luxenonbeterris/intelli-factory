@@ -1,152 +1,153 @@
-import type { CustomerRequest } from '@prisma/client'
+import { faker } from '@faker-js/faker'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  // clear
   await prisma.finalOffer.deleteMany()
   await prisma.compiledOffer.deleteMany()
-  await prisma.logisticOffer.deleteMany()
-  await prisma.logisticsRequest.deleteMany()
-  await prisma.factoryOffer.deleteMany()
+  await prisma.logisticResponse.deleteMany()
+  await prisma.factoryResponse.deleteMany()
   await prisma.customerRequest.deleteMany()
-  await prisma.factory.deleteMany()
-  await prisma.positionCategory.deleteMany()
+  await prisma.category.deleteMany()
+  await prisma.auditLog.deleteMany()
   await prisma.user.deleteMany()
 
-  // seed users
-  const passwordHash = await bcrypt.hash('test1234', 10)
+  const passwordHash = await bcrypt.hash('14505', 10)
+
   const customers = await Promise.all(
-    [...Array(10)].map((_, i) =>
+    [...Array(10)].map(() =>
       prisma.user.create({
         data: {
-          email: `customer${i}@test.com`,
+          email: faker.internet.email(),
           password: passwordHash,
+          name: faker.person.fullName(),
           role: 'CUSTOMER',
-          name: `Customer ${i}`,
+          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
         },
       })
     )
   )
+
   const factories = await Promise.all(
-    [...Array(5)].map((_, i) =>
+    [...Array(10)].map(() =>
       prisma.user.create({
         data: {
-          email: `factory${i}@test.com`,
+          email: faker.internet.email(),
           password: passwordHash,
+          name: faker.person.fullName(),
           role: 'FACTORY',
-          name: `Factory Owner ${i}`,
+          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
         },
       })
     )
   )
-  const logistics = await Promise.all(
-    [...Array(3)].map((_, i) =>
+
+  const logists = await Promise.all(
+    [...Array(10)].map(() =>
       prisma.user.create({
         data: {
-          email: `logistic${i}@test.com`,
+          email: faker.internet.email(),
           password: passwordHash,
+          name: faker.person.fullName(),
           role: 'LOGISTIC',
-          name: `Logistic ${i}`,
+          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
         },
       })
     )
   )
-  await Promise.all(
-    [...Array(2)].map((_, i) =>
+
+  const managers = await Promise.all(
+    [...Array(2)].map(() =>
       prisma.user.create({
         data: {
-          email: `manager${i}@test.com`,
+          email: faker.internet.email(),
           password: passwordHash,
+          name: faker.person.fullName(),
           role: 'MANAGER',
-          name: `Manager ${i}`,
+          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
         },
       })
     )
   )
 
-  // seed categories
-  const categories = await Promise.all(
-    ['Металлы', 'Электроника', 'Текстиль', 'Стройматериалы', 'Пищевое оборудование'].map((name) =>
-      prisma.positionCategory.create({ data: { name } })
-    )
-  )
+  const categoryNames = ['Metal', 'Electronincs', 'Textile', 'Essentials', 'Furniture']
+  await Promise.all(categoryNames.map((name) => prisma.category.create({ data: { name } })))
 
-  // factories with categories
-  const factoryEntities = await Promise.all(
-    factories.map((factory, i) =>
-      prisma.factory.create({
-        data: {
-          name: `Factory ${i}`,
-          userId: factory.id,
-          categories: {
-            connect: categories.filter((_, idx) => idx % (i + 2) === 0).map((c) => ({ id: c.id })),
-          },
-        },
-      })
-    )
-  )
-
-  // customer requests
-  const requests: CustomerRequest[] = []
-  for (const customer of customers) {
-    const requestCount = Math.floor(Math.random() * 2) + 2
-    for (let j = 0; j < requestCount; j++) {
-      const category = categories[Math.floor(Math.random() * categories.length)]
-      requests.push(
-        await prisma.customerRequest.create({
-          data: {
-            description: `Need ${category.name} - qty ${10 + j}`,
-            quantity: 10 + j,
-            categoryId: category.id,
-            customerId: customer.id,
-          },
-        })
-      )
-    }
+  const allUsers = [...customers, ...factories, ...logists, ...managers]
+  for (const user of allUsers) {
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        type: 'INFO',
+        message: `${user.role} ${user.name} entered system`,
+      },
+    })
   }
 
-  // factory offers + logistics + compiled + final
-  for (const req of requests) {
-    const selectedFactories = factoryEntities.slice(0, 2 + Math.floor(Math.random() * 2))
-    for (const f of selectedFactories) {
-      const factoryOffer = await prisma.factoryOffer.create({
+  const allCategories = await prisma.category.findMany()
+
+  for (const customer of customers) {
+    const requestCount = faker.number.int({ min: 1, max: 3 })
+
+    for (let i = 0; i < requestCount; i++) {
+      const category = faker.helpers.arrayElement(allCategories)
+
+      const request = await prisma.customerRequest.create({
         data: {
-          price: 1000 + Math.random() * 500,
-          estimatedTimeDays: 5 + Math.floor(Math.random() * 10),
-          factoryId: f.id,
-          requestId: req.id,
+          customerId: customer.id,
+          itemName: faker.commerce.productName(),
+          unit: faker.helpers.arrayElement(['kg', 'pcs', 'liters', 'meters']),
+          quantity: faker.number.float({ min: 10, max: 500 }),
+          categoryId: category.id,
+          description: faker.commerce.productDescription(),
+          location: customer.location,
         },
       })
 
-      const logisticsRequest = await prisma.logisticsRequest.create({
-        data: { factoryOfferId: factoryOffer.id },
-      })
+      const respondingFactories = faker.helpers.arrayElements(factories, 2)
 
-      const logisticOffer = await prisma.logisticOffer.create({
-        data: {
-          etaDays: 2 + Math.floor(Math.random() * 5),
-          deliveryCost: 200 + Math.random() * 100,
-          logisticsRequestId: logisticsRequest.id,
-          logisticId: logistics[Math.floor(Math.random() * logistics.length)].id,
-        },
-      })
-
-      const compiled = await prisma.compiledOffer.create({
-        data: {
-          factoryOfferId: factoryOffer.id,
-          logisticOfferId: logisticOffer.id,
-        },
-      })
-
-      if (Math.random() < 0.5) {
-        await prisma.finalOffer.create({
+      for (const factory of respondingFactories) {
+        const factoryResponse = await prisma.factoryResponse.create({
           data: {
-            compiledOfferId: compiled.id,
+            userId: factory.id,
+            requestId: request.id,
+            price: faker.number.float({ min: 100, max: 2000 }),
+            currency: 'USD',
+            estimatedDays: faker.number.int({ min: 3, max: 10 }),
+            location: factory.location,
           },
         })
+
+        const logist = faker.helpers.arrayElement(logists)
+        const logisticResponse = await prisma.logisticResponse.create({
+          data: {
+            userId: logist.id,
+            factoryResponseId: factoryResponse.id,
+            etaDays: faker.number.int({ min: 1, max: 5 }),
+            deliveryCost: faker.number.float({ min: 50, max: 500 }),
+          },
+        })
+
+        const compiled = await prisma.compiledOffer.create({
+          data: {
+            factoryResponseId: factoryResponse.id,
+            logisticResponseId: logisticResponse.id,
+          },
+        })
+
+        if (Math.random() < 0.7) {
+          await prisma.finalOffer.create({
+            data: {
+              compiledOfferId: compiled.id,
+              finalEtaDays: factoryResponse.estimatedDays + logisticResponse.etaDays,
+              finalPrice: factoryResponse.price + logisticResponse.deliveryCost,
+              currency: 'USD',
+              confirmed: faker.datatype.boolean(),
+            },
+          })
+        }
       }
     }
   }
