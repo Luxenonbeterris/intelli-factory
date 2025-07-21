@@ -27,6 +27,8 @@ model User {
   factoryResponses   FactoryResponse[]
   logisticResponses  LogisticResponse[]
   logs               AuditLog[]
+  
+  categoryLinks CategoryToUser[]
 }
 
 model CustomerRequest {
@@ -35,30 +37,38 @@ model CustomerRequest {
   customer    User     @relation(fields: [customerId], references: [id])
   itemName    String
   unit        String
-  quantity    Float
+  quantity    Decimal
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id])
   description String?
   location    String?
+  status      String   @default("PENDING")
+  archived    Boolean  @default(false)
   createdAt   DateTime @default(now())
 
   factoryResponses FactoryResponse[]
+
+  @@index([customerId])
+  @@index([categoryId])
 }
 
 model FactoryResponse {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  requestId   Int
-  request     CustomerRequest @relation(fields: [requestId], references: [id])
-  price       Float
-  currency    String
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  requestId     Int
+  request       CustomerRequest @relation(fields: [requestId], references: [id])
+  price         Float
+  currency      String
   estimatedDays Int
-  location    String?
-  createdAt   DateTime @default(now())
+  location      String?
+  isArchived    Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
   logisticResponses LogisticResponse[]
   compiledOffers    CompiledOffer[]
+
+  @@index([requestId])
 }
 
 model LogisticResponse {
@@ -69,20 +79,25 @@ model LogisticResponse {
   factoryResponse   FactoryResponse @relation(fields: [factoryResponseId], references: [id])
   etaDays           Int
   deliveryCost      Float
+  isArchived        Boolean  @default(false)
   createdAt         DateTime @default(now())
 
   compiledOffers CompiledOffer[]
+
+  @@index([factoryResponseId])
 }
 
 model CompiledOffer {
-  id                Int      @id @default(autoincrement())
-  factoryResponseId Int
-  factoryResponse   FactoryResponse @relation(fields: [factoryResponseId], references: [id])
-  logisticResponseId Int
-  logisticResponse   LogisticResponse @relation(fields: [logisticResponseId], references: [id])
-  createdAt         DateTime @default(now())
+  id                  Int      @id @default(autoincrement())
+  factoryResponseId   Int
+  factoryResponse     FactoryResponse @relation(fields: [factoryResponseId], references: [id])
+  logisticResponseId  Int
+  logisticResponse    LogisticResponse @relation(fields: [logisticResponseId], references: [id])
+  createdAt           DateTime @default(now())
 
   finalOffer FinalOffer?
+
+  @@unique([factoryResponseId, logisticResponseId])
 }
 
 model FinalOffer {
@@ -90,17 +105,20 @@ model FinalOffer {
   compiledOfferId Int      @unique
   compiledOffer   CompiledOffer @relation(fields: [compiledOfferId], references: [id])
   finalEtaDays    Int
-  finalPrice      Float
+  finalPrice      Decimal
+  margin          Decimal   @default(0.0) 
   currency        String
-  createdAt       DateTime @default(now())
-  confirmed       Boolean  @default(false)
+  finalNote       String?
+  confirmed       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
 }
 
 model Category {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
   requests CustomerRequest[]
+
+  userLinks CategoryToUser[]
 }
 
 model AuditLog {
@@ -110,4 +128,17 @@ model AuditLog {
   type      String
   message   String
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
+
+model CategoryToUser {
+  categoryId Int
+  userId     Int
+
+  category Category @relation(fields: [categoryId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@id([categoryId, userId])
+}
+

@@ -35,17 +35,6 @@ export async function createCustomerRequest(req: Request, res: Response) {
   res.json({ message: 'Request created', requestId: newRequest.id })
 }
 
-export async function getRequestsForManager(req: Request, res: Response) {
-  const requests = await prisma.customerRequest.findMany({
-    include: {
-      customer: { select: { id: true, email: true, name: true } },
-      category: true,
-    },
-  })
-
-  res.json({ requests })
-}
-
 export async function getRequestsForFactory(req: Request, res: Response) {
   const requests = await prisma.customerRequest.findMany({
     select: {
@@ -65,6 +54,17 @@ export async function getRequestsForLogist(req: Request, res: Response) {
     select: {
       id: true,
       location: true,
+    },
+  })
+
+  res.json({ requests })
+}
+
+export async function getRequestsForManager(req: Request, res: Response) {
+  const requests = await prisma.customerRequest.findMany({
+    include: {
+      customer: { select: { id: true, email: true, name: true } },
+      category: true,
     },
   })
 

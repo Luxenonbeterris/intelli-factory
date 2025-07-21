@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Role } from '@prisma/client'
 import bcrypt from 'bcrypt'
-
 const prisma = new PrismaClient()
 
 async function main() {
@@ -16,64 +15,39 @@ async function main() {
 
   const passwordHash = await bcrypt.hash('14505', 10)
 
-  const customers = await Promise.all(
-    [...Array(10)].map(() =>
-      prisma.user.create({
-        data: {
-          email: faker.internet.email(),
-          password: passwordHash,
-          name: faker.person.fullName(),
-          role: 'CUSTOMER',
-          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
-        },
-      })
+  const createUsers = async (count: number, role: Role) =>
+    Promise.all(
+      Array.from({ length: count }, () =>
+        prisma.user.create({
+          data: {
+            email: faker.internet.email(),
+            password: passwordHash,
+            name: faker.person.fullName(),
+            role,
+            location: `${faker.location.city()} ${faker.location.streetAddress()}`,
+          },
+        })
+      )
     )
+
+  const customers = await createUsers(10, 'CUSTOMER')
+  const factories = await createUsers(10, 'FACTORY')
+  const logists = await createUsers(10, 'LOGISTIC')
+  const managers = await createUsers(2, 'MANAGER')
+
+  const categoryNames = ['Metal', 'Electronics', 'Textile', 'Essentials', 'Furniture']
+  const allCategories = await Promise.all(
+    categoryNames.map((name) => prisma.category.create({ data: { name } }))
   )
 
-  const factories = await Promise.all(
-    [...Array(10)].map(() =>
-      prisma.user.create({
-        data: {
-          email: faker.internet.email(),
-          password: passwordHash,
-          name: faker.person.fullName(),
-          role: 'FACTORY',
-          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
-        },
+  for (const factory of factories) {
+    const specialties = faker.helpers.arrayElements(allCategories, 2)
+    for (const category of specialties) {
+      await prisma.categoryToUser.create({
+        data: { categoryId: category.id, userId: factory.id },
       })
-    )
-  )
-
-  const logists = await Promise.all(
-    [...Array(10)].map(() =>
-      prisma.user.create({
-        data: {
-          email: faker.internet.email(),
-          password: passwordHash,
-          name: faker.person.fullName(),
-          role: 'LOGISTIC',
-          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
-        },
-      })
-    )
-  )
-
-  const managers = await Promise.all(
-    [...Array(2)].map(() =>
-      prisma.user.create({
-        data: {
-          email: faker.internet.email(),
-          password: passwordHash,
-          name: faker.person.fullName(),
-          role: 'MANAGER',
-          location: `${faker.location.city()} ${faker.location.streetAddress()}`,
-        },
-      })
-    )
-  )
-
-  const categoryNames = ['Metal', 'Electronincs', 'Textile', 'Essentials', 'Furniture']
-  await Promise.all(categoryNames.map((name) => prisma.category.create({ data: { name } })))
+    }
+  }
 
   const allUsers = [...customers, ...factories, ...logists, ...managers]
   for (const user of allUsers) {
@@ -85,8 +59,6 @@ async function main() {
       },
     })
   }
-
-  const allCategories = await prisma.category.findMany()
 
   for (const customer of customers) {
     const requestCount = faker.number.int({ min: 1, max: 3 })
@@ -120,6 +92,14 @@ async function main() {
           },
         })
 
+        await prisma.auditLog.create({
+          data: {
+            userId: factory.id,
+            type: 'FACTORY_RESPONDED',
+            message: `Factory ${factory.name} responded to request ${request.id}`,
+          },
+        })
+
         const logist = faker.helpers.arrayElement(logists)
         const logisticResponse = await prisma.logisticResponse.create({
           data: {
@@ -130,10 +110,26 @@ async function main() {
           },
         })
 
+        await prisma.auditLog.create({
+          data: {
+            userId: logist.id,
+            type: 'LOGISTIC_RESPONDED',
+            message: `Logist ${logist.name} responded to factoryResponse ${factoryResponse.id}`,
+          },
+        })
+
         const compiled = await prisma.compiledOffer.create({
           data: {
             factoryResponseId: factoryResponse.id,
             logisticResponseId: logisticResponse.id,
+          },
+        })
+
+        await prisma.auditLog.create({
+          data: {
+            userId: customer.id,
+            type: 'OFFER_COMPILED',
+            message: `Compiled offer for request ${request.id} by factory ${factory.id} and logist ${logist.id}`,
           },
         })
 

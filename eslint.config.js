@@ -83,7 +83,7 @@ export default [
     },
   },
 
-  //server: Tests
+  // server: Tests
   {
     files: ['server/tests/**/*.{ts,tsx}'],
     languageOptions: {
@@ -97,7 +97,7 @@ export default [
         expect: 'readonly',
         beforeAll: 'readonly',
         afterAll: 'readonly',
-        test: 'readonly',
+        jest: 'readonly',
       },
     },
     plugins: { '@typescript-eslint': tseslintPlugin, n: nodePlugin },
