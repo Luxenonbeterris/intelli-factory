@@ -1,0 +1,57 @@
+{
+  "layout": {
+    "login": "Login",
+    "about": "About Us",
+    "contacts": "Contacts",
+    "how": "How it works"
+  },
+  "hero": {
+    "title": "Seamlessly source production worldwide",
+    "description": "From placing requests to secure delivery — we take care of everything so you can focus on your business.",
+    "cta": "Get Started"
+  },
+  "features": {
+    "global": {
+      "title": "Global reach",
+      "description": "Find manufacturers and clients across continents without barriers."
+    },
+    "logistics": {
+      "title": "Integrated logistics",
+      "description": "We handle delivery with trusted logistic partners worldwide."
+    },
+    "secure": {
+      "title": "Secure contracts",
+      "description": "All transactions are protected under smart contracts and escrow."
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "description": "We are a team of engineers and logistics experts dedicated to transforming global supply chains. Our platform connects businesses with top manufacturers and ensures hassle-free deliveries.",
+    "factory": "Factory illustration"
+  },
+  "how": {
+    "title": "How it works",
+    "workflow": "Workflow diagram",
+    "step1": {
+      "alt": "Post request",
+      "title": "1. Post your request",
+      "description": "Describe your manufacturing needs. We'll do the matchmaking."
+    },
+    "step2": {
+      "alt": "Offers",
+      "title": "2. Get best offers",
+      "description": "Receive proposals from vetted suppliers globally."
+    },
+    "step3": {
+      "alt": "Secure delivery",
+      "title": "3. Secure delivery",
+      "description": "We coordinate logistics and guarantee secure transactions."
+    }
+  },
+  "contacts": {
+    "title": "Contacts",
+    "alt": "Global presense",
+    "description": "Reach out to us at",
+    "cta": "Contact Us"
+  }
+}

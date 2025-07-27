@@ -1,0 +1,57 @@
+{
+  "layout": {
+    "login": "登录",
+    "about": "关于我们",
+    "contacts": "联系方式",
+    "how": "运作方式"
+  },
+  "hero": {
+    "title": "无缝连接全球生产资源",
+    "description": "从提交请求到安全交付 — 我们全程处理，让您专注于业务发展。",
+    "cta": "立即开始"
+  },
+  "features": {
+    "global": {
+      "title": "全球覆盖",
+      "description": "无障碍连接跨洲制造商和客户。"
+    },
+    "logistics": {
+      "title": "一体化物流",
+      "description": "我们与全球可信物流伙伴协作完成交付。"
+    },
+    "secure": {
+      "title": "安全合同",
+      "description": "所有交易通过智能合约和第三方托管保护。"
+    }
+  },
+  "about": {
+    "title": "关于我们",
+    "description": "我们是一支由工程师和物流专家组成的团队，致力于革新全球供应链。我们的平台连接企业与优质制造商，确保交付无忧。",
+    "factory": "工厂插图"
+  },
+  "how": {
+    "title": "运作方式",
+    "workflow": "工作流程图",
+    "step1": {
+      "alt": "提交请求",
+      "title": "1. 提交请求",
+      "description": "描述您的制造需求，我们将为您匹配合作方。"
+    },
+    "step2": {
+      "alt": "报价",
+      "title": "2. 获取最佳报价",
+      "description": "接收来自全球优质供应商的报价方案。"
+    },
+    "step3": {
+      "alt": "安全交付",
+      "title": "3. 安全交付",
+      "description": "我们协调物流，保障交易安全。"
+    }
+  },
+  "contacts": {
+    "title": "联系方式",
+    "alt": "全球布局",
+    "description": "联系我们：",
+    "cta": "联系我们"
+  }
+}
