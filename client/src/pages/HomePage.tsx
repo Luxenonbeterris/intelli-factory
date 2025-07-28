@@ -74,22 +74,28 @@ export default function HomePage() {
         <img src="/workflow.svg" alt={t('how.workflow')} className="w-64 mb-8" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl">
           <div className="p-6 bg-white rounded shadow flex flex-col items-center hover:scale-105 transition">
-            <img src="/contract.svg" alt={t('how.step1.post')} className="w-16 mb-4" />
-            <h3 className="text-xl font-bold mb-2">{t('how.step1.title')}</h3>
+            <img src="/contract.svg" alt={t('how.step1.post')} className="w-32 h-24 mb-6" />
+            <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">
+              {t('how.step1.title')}
+            </h3>
             <p className="text-center">{t('how.step1.description')}</p>
           </div>
           <div className="p-6 bg-white rounded shadow flex flex-col items-center hover:scale-105 transition">
             <img
               src="/containers.svg"
               alt={t('how.step2.alt')}
-              className="w-full h-32 object-cover rounded mb-4"
+              className="w-32 h-24 mb-6 object-cover rounded"
             />
-            <h3 className="text-xl font-bold mb-2">{t('how.step2.title')}</h3>
+            <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">
+              {t('how.step2.title')}
+            </h3>
             <p className="text-center">{t('how.step1.description')}</p>
           </div>
           <div className="p-6 bg-white rounded shadow flex flex-col items-center hover:scale-105 transition">
-            <img src="/secure.svg" alt={t('how.step3.alt')} className="w-16 mb-4" />
-            <h3 className="text-xl font-bold mb-2">{t('how.step3.title')}</h3>
+            <img src="/secure.svg" alt={t('how.step3.alt')} className="w-32 h-24 mb-6" />
+            <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">
+              {t('how.step3.title')}
+            </h3>
             <p className="text-center">{t('how.step3.description')}</p>
           </div>
         </div>
