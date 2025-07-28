@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .husky
+
+/server/prisma/seeds/*.json

@@ -6,7 +6,7 @@ export default function HomePage() {
     <div className="w-full">
       {/* Hero with background */}
       <div className="relative w-full">
-        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-[url('/background.webp')] bg-cover bg-center" />
         <div className="absolute inset-0 bg-black/50" />
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center py-20 px-4 w-full text-white">
@@ -56,9 +56,9 @@ export default function HomePage() {
       {/* About Us */}
       <section id="about" className="py-20 bg-white text-gray-900 flex flex-col items-center px-4">
         <img
-          src="/team.jpg"
+          src="/team.webp"
           alt={t('about.title')}
-          className="rounded-lg shadow mb-6 w-full max-w-md"
+          className="rounded-lg shadow mb-6 w-full max-w-xl"
         />
         <h2 className="text-3xl font-bold mb-6">{t('about.title')}</h2>
         <p className="max-w-2xl text-center text-lg mb-6">{t('about.description')}</p>
