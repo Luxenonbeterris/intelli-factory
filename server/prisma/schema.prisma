@@ -20,7 +20,7 @@ model User {
   password  String
   name      String?
   role      Role?
-  location  String?
+  location  String?       
   createdAt DateTime @default(now())
 
   requests           CustomerRequest[]
@@ -140,5 +140,40 @@ model CategoryToUser {
   user     User     @relation(fields: [userId], references: [id])
 
   @@id([categoryId, userId])
+}
+
+model Country {
+  id           Int                  @id @default(autoincrement())
+  code         String               @unique
+  regions      Region[]
+  translations CountryTranslation[]
+}
+
+model CountryTranslation {
+  id        Int     @id @default(autoincrement())
+  countryId Int
+  lang      String 
+  name      String
+
+  country Country @relation(fields: [countryId], references: [id])
+  @@unique([countryId, lang])
+}
+
+model Region {
+  id           Int                 @id @default(autoincrement())
+  countryId    Int
+  translations RegionTranslation[]
+
+  country Country @relation(fields: [countryId], references: [id])
+}
+
+model RegionTranslation {
+  id       Int     @id @default(autoincrement())
+  regionId Int
+  lang     String
+  name     String
+
+  region Region @relation(fields: [regionId], references: [id])
+  @@unique([regionId, lang])
 }
 
