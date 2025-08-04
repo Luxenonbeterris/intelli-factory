@@ -53,5 +53,24 @@
     "alt": "Global presense",
     "description": "Reach out to us at",
     "cta": "Contact Us"
+  },
+  "register": {
+    "title": "Create an Account",
+    "invalidEmail": "Invalid email format",
+    "passwordLength": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "error": "Registration failed",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password"
+  },
+  "login": {
+    "title": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "noAccount": "Don't have an account?",
+    "register": "Register"
   }
 }

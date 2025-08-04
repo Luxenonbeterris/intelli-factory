@@ -4,13 +4,16 @@ import { routes } from './routes.data'
 
 function AppRoutes() {
   return useRoutes(
-    routes.map((route) => ({
-      path: route.path,
-      element: (
-        <DefaultLayout>
-          <route.element />
-        </DefaultLayout>
-      ),
+    routes.map(({ path, element: Element, layout }) => ({
+      path,
+      element:
+        layout === false ? (
+          <Element />
+        ) : (
+          <DefaultLayout>
+            <Element />
+          </DefaultLayout>
+        ),
     }))
   )
 }

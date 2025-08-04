@@ -25,6 +25,9 @@ export async function authMiddleware(
         email: true,
         name: true,
         location: true,
+        emailVerified: true,
+        countryId: true,
+        regionId: true,
       },
     })
 

@@ -53,5 +53,24 @@
     "alt": "全球布局",
     "description": "联系我们：",
     "cta": "联系我们"
+  },
+  "register": {
+    "title": "创建账户",
+    "invalidEmail": "邮箱格式无效",
+    "passwordLength": "密码长度至少为6个字符",
+    "passwordMismatch": "两次输入的密码不一致",
+    "error": "注册失败",
+    "emailPlaceholder": "请输入邮箱",
+    "passwordPlaceholder": "请输入密码",
+    "confirmPasswordPlaceholder": "请确认密码"
+  },
+  "login": {
+    "title": "登录",
+    "email": "邮箱",
+    "password": "密码",
+    "emailPlaceholder": "请输入邮箱",
+    "passwordPlaceholder": "请输入密码",
+    "noAccount": "还没有账户？",
+    "register": "注册"
   }
 }

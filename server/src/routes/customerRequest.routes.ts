@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createCustomerRequest,
+  getRequestsForCustomer,
   getRequestsForFactory,
   getRequestsForLogist,
   getRequestsForManager,
@@ -18,5 +19,7 @@ router.get('/manager', requireRole('MANAGER'), getRequestsForManager)
 router.get('/factory', requireRole('FACTORY'), getRequestsForFactory)
 
 router.get('/logist', requireRole('LOGISTIC'), getRequestsForLogist)
+
+router.get('/customer', requireRole('CUSTOMER'), getRequestsForCustomer)
 
 export default router

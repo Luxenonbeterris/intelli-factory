@@ -6,4 +6,6 @@ export const RegisterSchema = z.object({
   name: z.string().min(1),
   role: z.enum(['CUSTOMER', 'FACTORY', 'LOGISTIC']),
   location: z.string().min(1),
+  countryId: z.number().int(),
+  regionId: z.number().int(),
 })

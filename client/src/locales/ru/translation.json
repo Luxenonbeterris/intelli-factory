@@ -53,5 +53,24 @@
     "alt": "Глобальное присутствие",
     "description": "Свяжитесь с нами по адресу",
     "cta": "Связаться"
+  },
+  "register": {
+    "title": "Создать аккаунт",
+    "invalidEmail": "Неверный формат электронной почты",
+    "passwordLength": "Пароль должен содержать минимум 6 символов",
+    "passwordMismatch": "Пароли не совпадают",
+    "error": "Не удалось зарегистрироваться",
+    "emailPlaceholder": "Введите вашу электронную почту",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "confirmPasswordPlaceholder": "Повторите пароль"
+  },
+  "login": {
+    "title": "Войти",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "emailPlaceholder": "Введите вашу почту",
+    "passwordPlaceholder": "Введите пароль",
+    "noAccount": "Нет аккаунта?",
+    "register": "Зарегистрироваться"
   }
 }

@@ -1,0 +1,45 @@
+import fs from 'fs/promises'
+
+export type CountryTranslation = { lang: string; name: string }
+export type CountryWithTranslations = { code: string; translations: CountryTranslation[] }
+
+const DEFAULT_TARGET_CODES = ['RU', 'KZ', 'CN'] as const
+
+type RawCountry = {
+  cca2: string
+  name?: { common?: string }
+  translations?: Record<string, { common?: string }>
+}
+
+/**
+ *
+ * @param countriesJsonPath
+ * @param targetCodes
+ */
+export async function loadCountryTranslations(
+  countriesJsonPath: string,
+  targetCodes: readonly string[] = Array.from(DEFAULT_TARGET_CODES)
+): Promise<CountryWithTranslations[]> {
+  const raw = await fs.readFile(countriesJsonPath, 'utf-8')
+  const countries: RawCountry[] = JSON.parse(raw)
+
+  return countries
+    .filter((c) => targetCodes.includes(c.cca2))
+    .map((country) => {
+      const code = country.cca2
+      const translations: CountryTranslation[] = []
+
+      if (typeof country.name?.common === 'string') {
+        translations.push({ lang: 'eng', name: country.name.common })
+      }
+
+      for (const lang of ['rus', 'zho'] as const) {
+        const trans = country.translations?.[lang]
+        if (typeof trans?.common === 'string') {
+          translations.push({ lang, name: trans.common })
+        }
+      }
+
+      return { code, translations }
+    })
+}

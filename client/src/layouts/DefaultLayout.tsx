@@ -53,7 +53,7 @@ export default function DefaultLayout({ children }: { children: React.ReactNode 
         </div>
       )}
 
-      <main className="flex-1 p-4">{children}</main>
+      <main className="flex-1 ">{children}</main>
 
       <footer className="p-4 bg-gray-100 text-center text-sm">
         &copy; {new Date().getFullYear()} SmartManagement

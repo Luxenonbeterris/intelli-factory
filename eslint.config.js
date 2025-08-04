@@ -26,9 +26,21 @@ export default [
         document: 'readonly',
         window: 'readonly',
         React: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        fetch: 'readonly',
+        localStorage: 'readonly',
       },
     },
-    plugins: { '@typescript-eslint': tseslintPlugin, react: reactPlugin, import: importPlugin },
+    plugins: {
+      '@typescript-eslint': tseslintPlugin,
+      react: reactPlugin,
+      import: importPlugin,
+    },
     settings: {
       'import/resolver': {
         typescript: {
@@ -63,6 +75,7 @@ export default [
         __dirname: 'readonly',
         require: 'readonly',
         module: 'readonly',
+        setTimeout: 'readonly',
       },
     },
     plugins: { '@typescript-eslint': tseslintPlugin, n: nodePlugin, import: importPlugin },

@@ -12,7 +12,7 @@
     "test:coverage": "jest --coverage"
   },
   "prisma": {
-    "seed": "ts-node seeds/seed.ts"
+    "seed": "ts-node prisma/seeds/seed.ts"
   },
   "type": "commonjs",
   "keywords": [],
@@ -31,6 +31,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.4",
+    "p-limit": "^6.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^4.0.5"

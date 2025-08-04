@@ -10,6 +10,8 @@ CREATE TABLE "User" (
     "role" "Role",
     "location" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "countryId" INTEGER,
+    "regionId" INTEGER,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -111,6 +113,42 @@ CREATE TABLE "CategoryToUser" (
     CONSTRAINT "CategoryToUser_pkey" PRIMARY KEY ("categoryId","userId")
 );
 
+-- CreateTable
+CREATE TABLE "Country" (
+    "id" SERIAL NOT NULL,
+    "code" TEXT NOT NULL,
+
+    CONSTRAINT "Country_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CountryTranslation" (
+    "id" SERIAL NOT NULL,
+    "countryId" INTEGER NOT NULL,
+    "lang" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "CountryTranslation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Region" (
+    "id" SERIAL NOT NULL,
+    "countryId" INTEGER NOT NULL,
+
+    CONSTRAINT "Region_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RegionTranslation" (
+    "id" SERIAL NOT NULL,
+    "regionId" INTEGER NOT NULL,
+    "lang" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "RegionTranslation_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -137,6 +175,21 @@ CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- CreateIndex
 CREATE INDEX "AuditLog_userId_idx" ON "AuditLog"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Country_code_key" ON "Country"("code");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CountryTranslation_countryId_lang_key" ON "CountryTranslation"("countryId", "lang");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RegionTranslation_regionId_lang_key" ON "RegionTranslation"("regionId", "lang");
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CustomerRequest" ADD CONSTRAINT "CustomerRequest_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -173,3 +226,12 @@ ALTER TABLE "CategoryToUser" ADD CONSTRAINT "CategoryToUser_categoryId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "CategoryToUser" ADD CONSTRAINT "CategoryToUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CountryTranslation" ADD CONSTRAINT "CountryTranslation_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Region" ADD CONSTRAINT "Region_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RegionTranslation" ADD CONSTRAINT "RegionTranslation_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
