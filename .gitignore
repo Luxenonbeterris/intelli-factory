@@ -1,28 +1,151 @@
-# Logs
-logs
-*.log
+# ---- Monorepo (pnpm, Node.js) ------------------------------------------------
+# Node.js dependencies
+node_modules/
+**/node_modules/
+
+# Package manager debug logs
+.pnpm-debug.log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+bun.lockb
 
-node_modules
-dist
-dist-ssr
-*.local
+# Keep lockfile (important for reproducible installs)
+# pnpm-lock.yaml
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# ---- OS and editor files -----------------------------------------------------
+# macOS system files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 
-.husky
+# Windows system files
+Thumbs.db
+ehthumbs.db
 
-/server/prisma/seeds/*.json
+# IDE project settings
+.idea/
+
+# VS Code settings (ignore all except useful shared configs)
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Sublime Text project/workspace
+*.sublime-project
+*.sublime-workspace
+
+# Vim/JetBrains temp files
+*~
+*.swp
+*.swo
+
+# ---- Build output and artifacts ----------------------------------------------
+dist/
+build/
+**/dist/
+**/build/
+
+# Temporary folders
+.temp/
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# ---- TypeScript --------------------------------------------------------------
+# TS incremental build info
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# ---- Tool caches -------------------------------------------------------------
+.cache/
+**/.cache/
+.eslintcache
+**/.eslintcache
+.turbo/
+.parcel-cache/
+.vite/
+**/.vite/
+
+# Future possible build targets
+.next/
+.nuxt/
+storybook-static/
+
+# ---- Test reports and coverage -----------------------------------------------
+coverage/
+**/coverage/
+.nyc_output/
+.jest/
+**/.jest/
+jest-cache/
+jest-results/
+coverage-final.json
+lcov.info
+reports/
+test-results/
+.ts-jest
+
+# ---- Logs and PID files ------------------------------------------------------
+logs/
+**/logs/
+*.log
+*.pid
+*.pid.lock
+
+# ---- Environment variables & secrets -----------------------------------------
+# General env files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local overrides
+*.local
+.envrc
+
+# Env files inside packages
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# ---- Prisma / Database -------------------------------------------------------
+# SQLite DB files (if used in dev)
+prisma/dev.db
+**/*.db
+**/*.db-journal
+**/*.sqlite
+**/*.sqlite-journal
+prisma/*.sqlite
+prisma/*.sqlite-journal
+prisma/*.log
+
+# ---- Deployment & infrastructure ---------------------------------------------
+# Husky internal hook files (keep folder, ignore internals)
+.husky/_/
+
+# Hosting/platform config
+.vercel/
+.netlify/
+firebase-debug.log
+
+# Functions dependencies (e.g., Firebase functions)
+functions/node_modules/
+
+# ---- Other -------------------------------------------------------------------
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+
+# Image optimizer caches
+.cache-loader/
+**/.cache-loader/
