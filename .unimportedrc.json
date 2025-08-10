@@ -1,0 +1,27 @@
+{
+  "entry": ["client/src/main.tsx", "server/src/index.ts"],
+  "extensions": [".ts", ".tsx", ".js", ".jsx"],
+  "ignore": [
+    "**/*.test.*",
+    "**/*.d.ts",
+    "**/*.stories.tsx",
+    "**/__tests__/**",
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    ".vercel",
+    "coverage"
+  ],
+  "aliases": {
+    "@": "./client/src",
+    "@server": "./server/src"
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["client/src/*"],
+      "@server/*": ["server/src/*"]
+    }
+  }
+}

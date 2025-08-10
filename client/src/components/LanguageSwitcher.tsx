@@ -1,3 +1,4 @@
+// client/src/components/LanguageSwitcher.tsx
 import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useClickOutside } from '../hooks/useClickOutside'
@@ -5,7 +6,7 @@ import { useClickOutside } from '../hooks/useClickOutside'
 const LANGUAGES = [
   { code: 'ru', label: '🇷🇺 Рус' },
   { code: 'en', label: '🇬🇧 Eng' },
-  { code: 'cn', label: '🇨🇳 中文' },
+  { code: 'zh', label: '🇨🇳 中文' },
 ]
 
 export default function LanguageSwitcher() {
@@ -23,6 +24,7 @@ export default function LanguageSwitcher() {
   return (
     <div ref={ref} className="relative inline-block text-left">
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="true"
         aria-expanded={open}
@@ -48,6 +50,7 @@ export default function LanguageSwitcher() {
           {LANGUAGES.map(({ code, label }) => (
             <li key={code} role="none">
               <button
+                type="button"
                 onClick={() => {
                   i18n.changeLanguage(code)
                   setOpen(false)

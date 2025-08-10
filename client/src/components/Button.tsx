@@ -1,3 +1,4 @@
+// client/src/components/Button.tsx
 import React from 'react'
 
 type ButtonProps = {

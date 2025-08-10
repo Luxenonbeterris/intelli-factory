@@ -1,3 +1,4 @@
+// client/src/hooks/useClickOutside.ts
 import { useEffect } from 'react'
 
 export function useClickOutside(ref: React.RefObject<HTMLElement>, handler: () => void) {

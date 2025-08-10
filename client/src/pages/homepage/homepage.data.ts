@@ -1,3 +1,4 @@
+// client/src/pages/homepage/homepage.data.ts
 export const featuresData = [
   {
     icon: '/global.svg',

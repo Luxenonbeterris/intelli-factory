@@ -55,22 +55,68 @@
     "cta": "联系我们"
   },
   "register": {
+    "loadingRegions": "正在加载地区…",
+    "noRegions": "没有地区",
+    "loading": "加载中",
+    "step1": "账户",
+    "step2": "地区",
+    "titleStep1": "创建账户",
+    "titleStep2": "个人信息与地区",
     "title": "创建账户",
     "invalidEmail": "邮箱格式无效",
-    "passwordLength": "密码长度至少为6个字符",
+    "passwordLength": "密码长度不少于6个字符",
     "passwordMismatch": "两次输入的密码不一致",
     "error": "注册失败",
+    "success": "请检查您的邮箱以完成验证。",
+
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "name": "姓名",
+    "role": "角色",
+    "country": "国家",
+    "region": "地区",
+    "location": "位置",
+
     "emailPlaceholder": "请输入邮箱",
     "passwordPlaceholder": "请输入密码",
-    "confirmPasswordPlaceholder": "请确认密码"
+    "confirmPasswordPlaceholder": "请再次输入密码",
+    "namePlaceholder": "请输入全名",
+    "locationPlaceholder": "请输入您的位置",
+    "selectCountry": "选择国家",
+    "selectRegion": "选择地区",
+
+    "roles": {
+      "customer": "客户",
+      "factory": "工厂",
+      "logistic": "物流"
+    },
+
+    "nameRequired": "姓名为必填项",
+    "countryRequired": "国家为必选项"
   },
   "login": {
     "title": "登录",
     "email": "邮箱",
-    "password": "密码",
     "emailPlaceholder": "请输入邮箱",
+    "password": "密码",
     "passwordPlaceholder": "请输入密码",
-    "noAccount": "还没有账户？",
-    "register": "注册"
+    "noAccount": "还没有账号？",
+    "register": "注册",
+    "hintInvalidEmail": "邮箱格式不正确",
+    "hintShortPassword": "密码长度需 ≥ 6 个字符",
+    "error": "登录失败",
+    "errorWithMsg": "登录失败：{{msg}}",
+    "haveAccount": "已经有账号了吗？",
+    "login": "登录"
+  },
+  "auth": {
+    "submit": "提交",
+    "signingIn": "正在登录…"
+  },
+  "common": {
+    "back": "返回",
+    "next": "下一步",
+    "submit": "提交"
   }
 }

@@ -1,3 +1,4 @@
+// client/src/components/MenuToggle.tsx
 import { Button } from './Button'
 
 type MenuToggleProps = {

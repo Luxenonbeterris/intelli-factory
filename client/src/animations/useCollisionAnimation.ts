@@ -1,3 +1,4 @@
+// client/src/animations/useCollisionAnimation.ts
 import { cubicBezier, useAnimation } from 'framer-motion'
 import { useEffect, useState } from 'react'
 

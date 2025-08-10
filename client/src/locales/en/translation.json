@@ -55,22 +55,68 @@
     "cta": "Contact Us"
   },
   "register": {
+    "loadingRegions": "Loading regions…",
+    "noRegions": "No regions",
+    "loading": "Loading",
+    "step1": "Account",
+    "step2": "Location",
+    "titleStep1": "Create account",
+    "titleStep2": "Profile & Location",
     "title": "Create an Account",
     "invalidEmail": "Invalid email format",
     "passwordLength": "Password must be at least 6 characters",
     "passwordMismatch": "Passwords do not match",
     "error": "Registration failed",
+    "success": "Check your email for verification.",
+
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name",
+    "role": "Role",
+    "country": "Country",
+    "region": "Region",
+    "location": "Location",
+
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
-    "confirmPasswordPlaceholder": "Confirm your password"
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "namePlaceholder": "Enter your full name",
+    "locationPlaceholder": "Enter your location",
+    "selectCountry": "Select a country",
+    "selectRegion": "Select a region",
+
+    "roles": {
+      "customer": "Customer",
+      "factory": "Factory",
+      "logistic": "Logistic"
+    },
+
+    "nameRequired": "Name is required",
+    "countryRequired": "Country is required"
   },
   "login": {
     "title": "Sign In",
     "email": "Email",
-    "password": "Password",
     "emailPlaceholder": "Enter your email",
+    "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "noAccount": "Don't have an account?",
-    "register": "Register"
+    "register": "Register",
+    "hintInvalidEmail": "Invalid email format",
+    "hintShortPassword": "Password must be ≥ 6 chars",
+    "error": "Login failed",
+    "errorWithMsg": "Login failed: {{msg}}",
+    "haveAccount": "Do have an account?",
+    "login": "Login"
+  },
+  "auth": {
+    "submit": "Submit",
+    "signingIn": "Signing in…"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit"
   }
 }

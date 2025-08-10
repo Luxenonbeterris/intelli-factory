@@ -55,22 +55,68 @@
     "cta": "Связаться"
   },
   "register": {
+    "loadingRegions": "Загрузка регионов…",
+    "noRegions": "Нет регионов",
+    "loading": "Загрузка",
+    "step1": "Аккаунт",
+    "step2": "Локация",
+    "titleStep1": "Создание аккаунта",
+    "titleStep2": "Профиль и локация",
     "title": "Создать аккаунт",
-    "invalidEmail": "Неверный формат электронной почты",
-    "passwordLength": "Пароль должен содержать минимум 6 символов",
+    "invalidEmail": "Неверный формат email",
+    "passwordLength": "Пароль должен содержать не менее 6 символов",
     "passwordMismatch": "Пароли не совпадают",
-    "error": "Не удалось зарегистрироваться",
-    "emailPlaceholder": "Введите вашу электронную почту",
+    "error": "Ошибка регистрации",
+    "success": "Проверьте свою почту для подтверждения.",
+
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "name": "Имя",
+    "role": "Роль",
+    "country": "Страна",
+    "region": "Регион",
+    "location": "Местоположение",
+
+    "emailPlaceholder": "Введите ваш email",
     "passwordPlaceholder": "Введите ваш пароль",
-    "confirmPasswordPlaceholder": "Повторите пароль"
+    "confirmPasswordPlaceholder": "Подтвердите ваш пароль",
+    "namePlaceholder": "Введите ваше полное имя",
+    "locationPlaceholder": "Введите ваше местоположение",
+    "selectCountry": "Выберите страну",
+    "selectRegion": "Выберите регион",
+
+    "roles": {
+      "customer": "Клиент",
+      "factory": "Фабрика",
+      "logistic": "Логист"
+    },
+
+    "nameRequired": "Имя обязательно",
+    "countryRequired": "Страна обязательна"
   },
   "login": {
-    "title": "Войти",
-    "email": "Электронная почта",
+    "title": "Вход",
+    "email": "Email",
+    "emailPlaceholder": "Введите email",
     "password": "Пароль",
-    "emailPlaceholder": "Введите вашу почту",
     "passwordPlaceholder": "Введите пароль",
     "noAccount": "Нет аккаунта?",
-    "register": "Зарегистрироваться"
+    "register": "Зарегистрироваться",
+    "hintInvalidEmail": "Некорректный формат email",
+    "hintShortPassword": "Пароль должен быть не короче 6 символов",
+    "error": "Не удалось войти",
+    "errorWithMsg": "Не удалось войти: {{msg}}",
+    "haveAccount": "Уже есть аккаунт?",
+    "login": "Войти"
+  },
+  "auth": {
+    "submit": "Отправить",
+    "signingIn": "Входим…"
+  },
+  "common": {
+    "back": "Назад",
+    "next": "Далее",
+    "submit": "Отправить"
   }
 }

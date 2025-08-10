@@ -1,3 +1,4 @@
+// client/src/pages/homepage/HomePage.tsx
 import { Easing, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useCollisionAnimation } from '../../animations/useCollisionAnimation'

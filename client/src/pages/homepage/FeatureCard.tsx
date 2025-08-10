@@ -1,3 +1,4 @@
+// client/src/pages/homepage/FeatureCard.tsx
 import { motion, useAnimate } from 'framer-motion'
 import { useEffect } from 'react'
 

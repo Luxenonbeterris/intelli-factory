@@ -1,121 +1,198 @@
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import { registerUser } from '../../api/auth'
-import { validateEmail, validatePassword } from '../../utils/validation'
+// client/src/components/auth/RegisterForm.tsx
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useRegisterForm } from '../../hooks/useRegisterForm'
 import LanguageSwitcher from '../LanguageSwitcher'
 import AuthForm from './AuthForm'
+import RegisterFieldsPart1 from './RegisterFieldsPart1'
+import RegisterFieldsPart2 from './RegisterFieldsPart2'
+
+type Step = 1 | 2
+const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)
 
 export default function RegisterForm() {
-  const { t } = useTranslation()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState<string | undefined>()
-  const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const {
+    t,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    name,
+    setName,
+    role,
+    setRole,
+    location,
+    setLocation,
+    countryId,
+    setCountryId,
+    regionId,
+    setRegionId,
+    countries,
+    regions,
+    regionsLoading,
+    error,
+    success,
+    submittedEmail,
+    loading,
+    onSubmit,
+  } = useRegisterForm()
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError(undefined)
-    setSuccess(false)
+  const tSimple = (k: string, def?: string) => t(k, { defaultValue: def })
+  const [step, setStep] = useState<Step>(1)
 
-    if (!validateEmail(email)) {
-      setError(t('register.invalidEmail', 'Invalid email format'))
+  const navigate = useNavigate() // NEW
+
+  useEffect(() => {
+    if (success) {
+      navigate('/verify-email-notify', { state: { email: submittedEmail ?? undefined } })
+    }
+  }, [success, submittedEmail, navigate])
+  const canNextFrom1 = useMemo(
+    () =>
+      isEmail(email) &&
+      password.length >= 6 &&
+      confirmPassword === password &&
+      name.trim().length > 0,
+    [email, password, confirmPassword, name]
+  )
+
+  const canSubmitFrom2 = useMemo(() => {
+    if (!countryId) return false
+    if (regions.length > 0) return !!regionId
+    return true
+  }, [countryId, regionId, regions])
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (step === 1) {
+      e.preventDefault()
+      if (canNextFrom1) setStep(2)
       return
     }
-
-    if (!validatePassword(password)) {
-      setError(t('register.passwordLength', 'Password must be at least 6 characters'))
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError(t('register.passwordMismatch', 'Passwords do not match'))
-      return
-    }
-
-    setLoading(true)
-    try {
-      await registerUser({ email, password }) // name, role и т.д. — позже
-      setSuccess(true)
-      setEmail('')
-      setPassword('')
-      setConfirmPassword('')
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || t('register.error', 'Registration failed'))
-      } else {
-        setError(t('register.error', 'Registration failed'))
-      }
-    } finally {
-      setLoading(false)
-    }
+    onSubmit(e)
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gradient-to-tr from-blue-100 to-blue-300">
       <AuthForm
-        title={t('register.title', 'Create an Account')}
-        onSubmit={onSubmit}
+        title={
+          step === 1
+            ? t('register.titleStep1', 'Create account')
+            : t('register.titleStep2', 'Profile & Location')
+        }
+        onSubmit={handleSubmit}
         loading={loading}
         error={error}
         showRegisterLink={false}
       >
+        {/* Кнопки внутри дочерних компонентов — type="button" */}
         <LanguageSwitcher />
 
-        <label className="flex flex-col text-sm font-semibold text-gray-800">
-          {t('login.email', 'Email')}
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('register.emailPlaceholder', 'Enter your email')}
-            required
-            className="mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-400 shadow-sm transition"
-          />
-        </label>
+        {/* Индикатор шагов */}
+        <div className="mb-2 flex items-center justify-center gap-4 text-sm font-semibold">
+          <span className={step === 1 ? 'text-blue-600' : 'text-gray-500'}>
+            {t('register.step1', 'Account')}
+          </span>
+          <span>•</span>
+          <span className={step === 2 ? 'text-blue-600' : 'text-gray-500'}>
+            {t('register.step2', 'Location')}
+          </span>
+        </div>
 
-        <label className="flex flex-col text-sm font-semibold text-gray-800">
-          {t('login.password', 'Password')}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t('register.passwordPlaceholder', 'Enter your password')}
-            required
-            className="mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-400 shadow-sm transition"
-          />
-        </label>
+        {/* Поля без дублирования */}
+        <div className="grid grid-cols-1 gap-3">
+          {step === 1 ? (
+            <>
+              <RegisterFieldsPart1
+                t={tSimple}
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                confirmPassword={confirmPassword}
+                setConfirmPassword={setConfirmPassword}
+                name={name}
+                setName={setName}
+                role={role}
+                setRole={setRole}
+              />
 
-        <label className="flex flex-col text-sm font-semibold text-gray-800">
-          {t('register.confirmPassword', 'Confirm Password')}
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder={t('register.confirmPasswordPlaceholder', 'Confirm your password')}
-            required
-            className="mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-400 shadow-sm transition"
-          />
-        </label>
+              {/* Неблокирующие подсказки как в LoginForm */}
+              {!isEmail(email) && email.length > 0 && (
+                <p className="text-xs text-amber-700">
+                  {t('login.hintInvalidEmail', 'Invalid email format')}
+                </p>
+              )}
+              {password.length > 0 && password.length < 6 && (
+                <p className="text-xs text-amber-700">
+                  {t('login.hintShortPassword', 'Password must be ≥ 6 chars')}
+                </p>
+              )}
+              {confirmPassword.length > 0 && confirmPassword !== password && (
+                <p className="text-xs text-amber-700">
+                  {t('register.hintPasswordsMismatch', 'Passwords do not match')}
+                </p>
+              )}
+            </>
+          ) : (
+            <RegisterFieldsPart2
+              t={tSimple}
+              location={location}
+              setLocation={setLocation}
+              countryId={countryId}
+              setCountryId={setCountryId}
+              regionId={regionId}
+              setRegionId={setRegionId}
+              countries={countries}
+              regions={regions}
+              regionsLoading={regionsLoading}
+            />
+          )}
+        </div>
+
+        {/* Навигация по шагам */}
+        <div className="mt-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            disabled={step === 1 || loading}
+            className="px-3 py-2 rounded border text-sm disabled:opacity-50"
+          >
+            {t('common.back', 'Back')}
+          </button>
+
+          {step === 1 ? (
+            <button
+              type="submit"
+              disabled={!canNextFrom1 || loading}
+              className="px-4 py-2 rounded bg-blue-600 text-white text-sm disabled:opacity-50"
+            >
+              {t('common.next', 'Next')}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!canSubmitFrom2 || loading}
+              className="px-4 py-2 rounded bg-blue-600 text-white text-sm disabled:opacity-50"
+            >
+              {t('common.submit', 'Submit')}
+            </button>
+          )}
+        </div>
       </AuthForm>
 
-      {success && (
-        <p className="mt-4 font-semibold text-green-700">
-          {t('register.success', 'Check your email for verification.')}
-        </p>
-      )}
-
       <p className="mt-6 text-center text-gray-700">
-        {t('login.haveAccount', 'Already have an account?')}{' '}
+        {t('login.haveAccount', 'Do have an account?')}{' '}
         <Link
           to="/login"
           className="font-semibold text-blue-600 hover:text-blue-800 hover:underline transition"
         >
-          {t('login.title', 'Sign In')}
+          {t('login.login', 'Login')}
         </Link>
       </p>
+
+      <style>{`button[type="submit"]:disabled { cursor: not-allowed; }`}</style>
     </div>
   )
 }
