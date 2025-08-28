@@ -66,7 +66,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './server/tsconfig.json',
+        project: './server/tsconfig.eslint.json',
         sourceType: 'module',
       },
       globals: {
@@ -82,7 +82,7 @@ export default [
     settings: {
       'import/resolver': {
         typescript: {
-          project: './server/tsconfig.json',
+          project: './server/tsconfig.eslint.json',
         },
       },
     },
@@ -102,7 +102,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './server/tsconfig.json',
+        project: './server/tsconfig.eslint.json',
       },
       globals: {
         describe: 'readonly',

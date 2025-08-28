@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export default function VerifyEmail() {
-  const [sp] = useSearchParams()
+  const [params] = useSearchParams()
   const navigate = useNavigate()
   const [status, setStatus] = useState<'loading' | 'ok' | 'fail'>('loading')
   const [message, setMessage] = useState('Verifying…')
@@ -13,14 +13,15 @@ export default function VerifyEmail() {
     if (calledRef.current) return
     calledRef.current = true
 
-    const token = sp.get('token')
+    const token = params.get('token')
     if (!token) {
       setStatus('fail')
-      setMessage('Token отсутствует')
+      setMessage('Token is missing')
       return
     }
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+    const envBase = import.meta.env.VITE_API_BASE_URL as string | undefined
+    const apiBase = envBase ? envBase.replace(/\/$/, '') : 'http://localhost:3001/api'
 
     ;(async () => {
       try {
@@ -31,7 +32,7 @@ export default function VerifyEmail() {
 
         if (res.ok) {
           setStatus('ok')
-          setMessage(text || 'Email confirmation success!')
+          setMessage(text || 'Email confirmed!')
           setTimeout(() => navigate('/login'), 1500)
         } else {
           setStatus('fail')
@@ -42,7 +43,7 @@ export default function VerifyEmail() {
         setMessage('Network error')
       }
     })()
-  }, [navigate, sp])
+  }, [navigate, params])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-blue-300 px-4">
