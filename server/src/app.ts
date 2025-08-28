@@ -10,12 +10,23 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors({ origin: ['http://localhost:5173'], methods: ['GET', 'POST', 'OPTIONS'] }))
+const origin = process.env.CLIENT_ORIGIN || '*'
+app.use(
+  cors({
+    origin,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true,
+  })
+)
 
 app.use(express.json())
 
-app.use('/auth', authRoutes)
-app.use('/customer/requests', customerRequestRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/customer/requests', customerRequestRoutes)
 app.use('/api', locationRoutes)
+
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true })
+})
 
 export default app

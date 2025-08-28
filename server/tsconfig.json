@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "target": "es2020",
     "module": "CommonJS",
     "esModuleInterop": true,
     "strict": true,
     "types": ["node", "jest"]
   },
-  "include": ["src", "prisma", "types", "tests", "tools"]
+  "include": ["src"]
 }

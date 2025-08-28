@@ -8,10 +8,13 @@
     "server"
   ],
   "scripts": {
-    "start": "pnpm -r --parallel run dev",
-    "dev": "pnpm --parallel \"--filter server dev\" \"--dir client pnpm dev\"",
-    "build": "echo 'Run pnpm --filter client build or setup server build'",
-    "lint": "eslint \"{client,server}/**/*.{js,jsx,ts,tsx}\"",
+    "dev": "pnpm -r --parallel --filter client --filter server run dev",
+    "build": "pnpm --filter client build && pnpm --filter server build",
+    "build:client": "pnpm --filter client build",
+    "build:server": "pnpm --filter server build",
+    "start": "pnpm --filter server start",
+    "typecheck": "pnpm -r exec tsc --noEmit",
+    "lint": "eslint \"{client,server}/**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "format": "prettier --write \"{client,server}/**/*.{js,jsx,ts,tsx,json,md}\"",
     "prepare": "husky install",
     "add-path-comments": "ts-node server/tools/add-path-comments.ts"

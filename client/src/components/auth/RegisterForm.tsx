@@ -42,7 +42,7 @@ export default function RegisterForm() {
   const tSimple = (k: string, def?: string) => t(k, { defaultValue: def })
   const [step, setStep] = useState<Step>(1)
 
-  const navigate = useNavigate() // NEW
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (success) {

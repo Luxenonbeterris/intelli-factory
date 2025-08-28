@@ -1,25 +1,24 @@
 // client/src/pages/homepage/HomePage.tsx
-import { Easing, motion } from 'framer-motion'
+import { Easing, motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { useCollisionAnimation } from '../../animations/useCollisionAnimation'
-import { useIsMobile } from '../../hooks/mobileHook'
 import { featuresData } from './homepage.data'
 
 const easeInOut: Easing = [0.42, 0, 0.58, 1]
 
-const floatAnimation = {
-  x: [0, 10, 0, -10, 0],
-  transition: {
-    duration: 2,
-    repeat: Infinity,
-    ease: easeInOut,
-  },
+// Simple reusable float animation factory
+function float(delay = 0) {
+  return {
+    animate: { x: [0, 8, 0, -8, 0] },
+    transition: { duration: 4, repeat: Infinity, ease: easeInOut, delay },
+  }
 }
 
 export default function HomePage() {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
-  const { leftControls, centerControls, rightControls, setIsPaused } = useCollisionAnimation()
+  const prefersReducedMotion = useReducedMotion()
+
+  // If user prefers reduced motion, we disable animations globally
+  const maybeFloat = (delay = 0) => (prefersReducedMotion ? {} : float(delay))
 
   return (
     <motion.div
@@ -45,43 +44,24 @@ export default function HomePage() {
             </a>
 
             {/* Features grid */}
-            <div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-16 mt-16 max-w-6xl w-full"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {featuresData.map(({ icon, titleKey, descriptionKey }, index) => {
-                const motionSettings = isMobile
-                  ? {
-                      animate: { x: [0, 10, 0, -10, 0] },
-                      transition: {
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: easeInOut,
-                        delay: index * 0.3,
-                      },
-                    }
-                  : {
-                      animate:
-                        index === 0 ? leftControls : index === 1 ? centerControls : rightControls,
-                    }
-
-                return (
-                  <motion.div
-                    key={titleKey}
-                    className="p-6 bg-white/80 backdrop-blur rounded shadow hover:scale-105 hover:shadow-xl transition flex flex-col items-center text-gray-900 border hover:border-blue-600"
-                    {...motionSettings}
-                  >
-                    <img src={icon} alt={t(titleKey)} className="w-32 h-24 mb-6" />
-                    <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">
-                      {t(titleKey)}
-                    </h3>
-                    <p className="text-center text-base sm:text-lg max-w-sm break-words">
-                      {t(descriptionKey)}
-                    </p>
-                  </motion.div>
-                )
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 mt-16 max-w-6xl w-full">
+              {featuresData.map(({ icon, titleKey, descriptionKey }, index) => (
+                <motion.div
+                  key={titleKey}
+                  className="p-6 bg-white/80 backdrop-blur rounded shadow hover:scale-105 hover:shadow-xl transition flex flex-col items-center text-gray-900 border hover:border-blue-600"
+                  // stagger a little per card; same logic for desktop & mobile
+                  {...maybeFloat(index * 0.3)}
+                  whileHover={{ scale: 1.05 }} // simple hover feedback
+                >
+                  <img src={icon} alt={t(titleKey)} className="w-32 h-24 mb-6" />
+                  <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">
+                    {t(titleKey)}
+                  </h3>
+                  <p className="text-center text-base sm:text-lg max-w-sm break-words">
+                    {t(descriptionKey)}
+                  </p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
@@ -132,8 +112,7 @@ export default function HomePage() {
               <motion.div
                 key={title}
                 className="p-6 bg-white rounded shadow flex flex-col items-center hover:scale-105 transition text-gray-900 border hover:border-blue-600"
-                animate={{ x: floatAnimation.x }}
-                transition={{ ...floatAnimation.transition, delay: i * 0.5 }}
+                {...maybeFloat(i * 0.5)}
               >
                 <img src={icon} alt={alt} className="w-32 h-24 mb-6 object-cover rounded" />
                 <h3 className="text-xl font-bold mb-2 text-center min-h-[2.5rem]">{title}</h3>
