@@ -10,26 +10,32 @@ dotenv.config()
 
 const app = express()
 
-// Build allowlist from env
-const raw = process.env.FRONTEND_ORIGINS ?? process.env.CLIENT_ORIGIN ?? ''
-const allowedOrigins = raw
+// Build allowlist from env (comma-separated)
+const raw = process.env.FRONTEND_ORIGINS ?? ''
+const allowlist = raw
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean)
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // allow non-browser tools / health checks with no Origin
-      if (!origin) return cb(null, true)
-      if (allowedOrigins.includes(origin)) return cb(null, true)
-      return cb(new Error(`Not allowed by CORS: ${origin}`))
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-)
+// Optional: allow any vercel preview like https://...vercel.app
+const ALLOW_VERCEL_PREVIEWS = process.env.ALLOW_VERCEL_PREVIEWS === '1'
+const vercelPreviewRe = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true) // curl/postman/healthchecks
+    if (allowlist.includes(origin)) return cb(null, true)
+    if (ALLOW_VERCEL_PREVIEWS && vercelPreviewRe.test(origin)) return cb(null, true)
+    return cb(new Error(`Not allowed by CORS: ${origin}`))
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}
+
+app.use(cors(corsOptions))
+// (defensive) make sure OPTIONS preflights are handled early
+app.options('*', cors(corsOptions))
 
 app.use(express.json())
 
