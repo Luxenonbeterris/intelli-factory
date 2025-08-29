@@ -10,11 +10,23 @@ dotenv.config()
 
 const app = express()
 
-const origin = process.env.CLIENT_ORIGIN || '*'
+// Build allowlist from env
+const raw = process.env.FRONTEND_ORIGINS ?? process.env.CLIENT_ORIGIN ?? ''
+const allowedOrigins = raw
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+
 app.use(
   cors({
-    origin,
-    methods: ['GET', 'POST', 'OPTIONS'],
+    origin: (origin, cb) => {
+      // allow non-browser tools / health checks with no Origin
+      if (!origin) return cb(null, true)
+      if (allowedOrigins.includes(origin)) return cb(null, true)
+      return cb(new Error(`Not allowed by CORS: ${origin}`))
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 )
