@@ -26,7 +26,8 @@ export function useRegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
   const [role, setRole] = useState<UiRole>('customer')
-  const [location, setLocation] = useState('')
+  const [street, setStreet] = useState('')
+  const [postalCode, setPostalCode] = useState('')
   const [countryId, setCountryId] = useState<number | null>(null)
   const [regionId, setRegionId] = useState<number | null>(null)
 
@@ -118,9 +119,10 @@ export function useRegisterForm() {
         password,
         name: name.trim(),
         role: mapUiToBackendRole(role),
-        location: location.trim() || undefined,
         countryId: countryId ?? undefined,
         regionId: regionId ?? undefined,
+        street: street.trim() || undefined,
+        postalCode: postalCode.trim() || undefined,
       })
 
       setSubmittedEmail(email.trim())
@@ -131,7 +133,8 @@ export function useRegisterForm() {
       setPassword('')
       setConfirmPassword('')
       setName('')
-      setLocation('')
+      setStreet('')
+      setPostalCode('')
       setCountryId(null)
       setRegionId(null)
       setRole('customer')
@@ -154,16 +157,18 @@ export function useRegisterForm() {
     confirmPassword,
     name,
     role,
-    location,
+    street,
+    postalCode,
     countryId,
     regionId,
     // setters
     setEmail,
+    setStreet,
+    setPostalCode,
     setPassword,
     setConfirmPassword,
     setName,
     setRole,
-    setLocation,
     setCountryId,
     setRegionId,
     // data

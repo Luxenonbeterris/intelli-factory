@@ -15,27 +15,32 @@ enum Role {
 }
 
 model User {
-  id             Int                  @id @default(autoincrement())
-  email          String               @unique
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
   password       String
   name           String?
   role           Role?
-  location       String?
-  emailVerified  Boolean              @default(false)
-  createdAt      DateTime             @default(now())
+  emailVerified  Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt DateTime @updatedAt 
 
-  countryId  Int?
-  regionId   Int?
-  country    Country? @relation(fields: [countryId], references: [id])
-  region     Region?  @relation(fields: [regionId], references: [id])
+  countryId      Int?
+  regionId       Int?
+  street         String?                     
+  postalCode     String?                     
+
+  country        Country? @relation(fields: [countryId], references: [id])
+  region         Region?  @relation(fields: [regionId], references: [id])
 
   requests           CustomerRequest[]
   factoryResponses   FactoryResponse[]
   logisticResponses  LogisticResponse[]
   logs               AuditLog[]
-
-  categoryLinks CategoryToUser[]
+  categoryLinks      CategoryToUser[]
   verificationTokens VerificationToken[]
+
+  @@index([countryId])
+  @@index([regionId])
 }
 
 model CustomerRequest {
@@ -189,14 +194,17 @@ model RegionTranslation {
 }
 
 model VerificationToken {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  tokenHash  String
-  type       String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique               
+  type      String                         
+  payload   Json?                          
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  usedAt    DateTime?                      
 
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@index([tokenHash])
+  @@index([userId, type])
+  @@index([expiresAt])
 }

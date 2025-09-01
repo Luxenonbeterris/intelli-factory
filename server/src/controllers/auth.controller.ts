@@ -2,9 +2,13 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import prisma from '../prisma'
+import { mailQueue } from '../queues/mailQueue'
 import { RegisterSchema } from '../schemas/registerSchema'
-import { sendVerificationEmail } from '../services/mailService'
-import { createVerificationToken, deleteToken, verifyToken } from '../services/verificationService'
+import {
+  consumeVerification,
+  createVerificationToken,
+  findValidVerification,
+} from '../services/verificationService'
 import { signToken } from '../utils/jwt'
 
 export async function register(req: Request, res: Response): Promise<void> {
@@ -14,7 +18,7 @@ export async function register(req: Request, res: Response): Promise<void> {
     return
   }
 
-  const { email, password, name, role, location, countryId, regionId } = parsed.data
+  const { email, password, name, role, countryId, regionId, street, postalCode } = parsed.data
 
   const exists = await prisma.user.findUnique({ where: { email } })
   if (exists) {
@@ -50,14 +54,24 @@ export async function register(req: Request, res: Response): Promise<void> {
       password: await bcrypt.hash(password, 10),
       name,
       role,
-      location,
       countryId,
-      regionId: regionId ?? null, // ← безопасно для стран без регионов
+      regionId: regionId ?? null,
+      street: street ?? null,
+      postalCode: postalCode ?? null,
     },
   })
 
-  const token = await createVerificationToken(user.id)
-  await sendVerificationEmail(user.email, token)
+  const token = await createVerificationToken(user.id, 30)
+  await mailQueue.add(
+    'sendVerification',
+    { email: user.email, token },
+    {
+      attempts: 5,
+      backoff: { type: 'exponential', delay: 1500 },
+      removeOnComplete: true,
+      removeOnFail: 100,
+    }
+  )
 
   res.status(201).json({
     message: 'Registered successfully, please verify your email',
@@ -67,24 +81,23 @@ export async function register(req: Request, res: Response): Promise<void> {
 
 export async function verifyEmail(req: Request, res: Response): Promise<void> {
   try {
-    const token = req.query.token as string
+    const token = String(req.query.token || '')
     if (!token) {
       res.status(400).send('Token отсутствует')
       return
     }
 
-    const dbToken = await verifyToken(token)
-    if (!dbToken) {
+    const vt = await findValidVerification(token)
+    if (!vt) {
       res.status(400).send('Неверный или просроченный токен')
       return
     }
 
     await prisma.user.update({
-      where: { id: dbToken.userId },
+      where: { id: vt.userId },
       data: { emailVerified: true },
     })
-
-    await deleteToken(dbToken.id)
+    await consumeVerification(vt.id)
 
     res.send('Email подтверждён успешно!')
   } catch (err) {

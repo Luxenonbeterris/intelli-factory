@@ -8,16 +8,19 @@
     "server"
   ],
   "scripts": {
-    "dev": "pnpm -r --parallel --filter client --filter server run dev",
+    "dev": "pnpm -r --parallel --filter client --filter server dev",
+    "start": "pnpm -r --parallel --filter client --filter server start",
+    "prestart": "pnpm build",
     "build": "pnpm --filter client build && pnpm --filter server build",
     "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
-    "start": "pnpm --filter server start",
-    "typecheck": "pnpm -r exec tsc --noEmit",
+    "typecheck": "pnpm -w exec tsc --noEmit",
     "lint": "eslint \"{client,server}/**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "format": "prettier --write \"{client,server}/**/*.{js,jsx,ts,tsx,json,md}\"",
     "prepare": "husky install",
-    "add-path-comments": "ts-node server/tools/add-path-comments.ts"
+    "add-path-comments": "ts-node server/tools/add-path-comments.ts",
+    "clean": "rm -rf client/dist server/dist",
+    "rebuild": "pnpm clean && pnpm build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -48,6 +51,7 @@
     "ts-node": "^10.9.2",
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
     "unimported": "^1.31.1"
   },
   "dependencies": {

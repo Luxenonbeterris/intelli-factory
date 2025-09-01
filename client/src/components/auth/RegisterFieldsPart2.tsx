@@ -3,28 +3,32 @@ import type { Country, Region } from '../../hooks/useRegisterForm'
 
 interface Props {
   t: (k: string, def?: string) => string
-  location: string
-  setLocation: (v: string) => void
+  street: string
+  setStreet: (v: string) => void
+  postalCode: string
+  setPostalCode: (v: string) => void
   countryId: number | null
   setCountryId: (v: number | null) => void
   regionId: number | null
   setRegionId: (v: number | null) => void
   countries: Country[]
   regions: Region[]
-  regionsLoading: boolean // <-- новое
+  regionsLoading: boolean
 }
 
 export default function RegisterFieldsPart2({
   t,
-  location,
-  setLocation,
   countryId,
   setCountryId,
   regionId,
   setRegionId,
   countries,
   regions,
-  regionsLoading, // <-- новое
+  regionsLoading,
+  setStreet,
+  setPostalCode,
+  street,
+  postalCode,
 }: Props) {
   const placeholder = regionsLoading
     ? t('register.loadingRegions', 'Loading regions…')
@@ -84,12 +88,23 @@ export default function RegisterFieldsPart2({
       </label>
 
       <label className="flex flex-col text-sm font-semibold text-gray-800">
-        {t('register.location')}
+        {t('register.street', 'Street')}
         <input
           type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder={t('register.locationPlaceholder')}
+          value={street}
+          onChange={(e) => setStreet(e.target.value)}
+          placeholder={t('register.streetPlaceholder', 'Street and house number')}
+          className="mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-400 shadow-sm transition"
+        />
+      </label>
+
+      <label className="flex flex-col text-sm font-semibold text-gray-800">
+        {t('register.postalCode', 'Postal code')}
+        <input
+          type="text"
+          value={postalCode}
+          onChange={(e) => setPostalCode(e.target.value)}
+          placeholder={t('register.postalCodePlaceholder', 'e.g. 12345')}
           className="mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-400 shadow-sm transition"
         />
       </label>

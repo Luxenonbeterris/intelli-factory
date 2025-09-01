@@ -23,8 +23,10 @@ export default function RegisterForm() {
     setName,
     role,
     setRole,
-    location,
-    setLocation,
+    street,
+    setStreet,
+    postalCode,
+    setPostalCode,
     countryId,
     setCountryId,
     regionId,
@@ -138,8 +140,10 @@ export default function RegisterForm() {
           ) : (
             <RegisterFieldsPart2
               t={tSimple}
-              location={location}
-              setLocation={setLocation}
+              street={street}
+              setStreet={setStreet}
+              postalCode={postalCode}
+              setPostalCode={setPostalCode}
               countryId={countryId}
               setCountryId={setCountryId}
               regionId={regionId}

@@ -9,9 +9,10 @@ export const registerUser = async (data: {
   password: string
   name?: string
   role?: string
-  location?: string
   countryId?: number
   regionId?: number
+  street?: string
+  postalCode?: string
 }): Promise<{ message: string; user: Pick<User, 'id' | 'email' | 'role'> }> => {
   const res = await fetch(`${BASE}/register`, {
     method: 'POST',

@@ -2,31 +2,34 @@
 import crypto from 'crypto'
 import prisma from '../prisma'
 
-export function generateToken() {
-  return crypto.randomBytes(32).toString('hex')
-}
+const hash = (t: string) => crypto.createHash('sha256').update(t).digest('hex')
+export const makeToken = () => crypto.randomBytes(32).toString('base64url')
 
-export async function createVerificationToken(userId: number) {
-  const token = generateToken()
-  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
-
+export async function createVerificationToken(userId: number, minutes = 30) {
+  const raw = makeToken()
   await prisma.verificationToken.create({
-    data: { userId, tokenHash, type: 'EMAIL_VERIFICATION', expiresAt },
+    data: {
+      userId,
+      tokenHash: hash(raw),
+      type: 'EMAIL_VERIFICATION',
+      expiresAt: new Date(Date.now() + minutes * 60 * 1000),
+    },
   })
-
-  return token
+  return raw
 }
 
-export async function verifyToken(token: string) {
-  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-
+export async function findValidVerification(raw: string) {
   return prisma.verificationToken.findFirst({
-    where: { tokenHash, type: 'EMAIL_VERIFICATION', expiresAt: { gt: new Date() } },
+    where: {
+      tokenHash: hash(raw),
+      type: 'EMAIL_VERIFICATION',
+      expiresAt: { gt: new Date() },
+      usedAt: null,
+    },
     include: { user: true },
   })
 }
 
-export async function deleteToken(id: number) {
-  return prisma.verificationToken.delete({ where: { id } })
+export async function consumeVerification(id: number) {
+  await prisma.verificationToken.update({ where: { id }, data: { usedAt: new Date() } })
 }
