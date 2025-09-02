@@ -17,6 +17,17 @@ Role-based B2B2C workflow platform
 
 ---
 
+## 📸 Screenshots
+
+<details>
+  <summary><b>📸 View screenshots</b></summary>
+
+![Homepage](https://github.com/user-attachments/assets/7b4298db-2c20-4d5a-9014-83b2e1d3e856)
+
+![Register](https://github.com/user-attachments/assets/e32ba14d-241c-4a33-86ba-a1406bb8bdc4)
+
+## </details>
+
 ## ✨ Overview
 
 A role-based B2B2C platform prototype — designed to simulate real manufacturing/logistics workflows while showcasing my full-stack engineering skills.
