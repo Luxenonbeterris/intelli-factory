@@ -1,18 +1,22 @@
 // server/src/utils/logger.ts
 import 'colors'
 
-type LoggerMethod = (msg: string) => void
+type LogInput = string | unknown
+const fmt = (x: LogInput) =>
+  typeof x === 'string'
+    ? x
+    : (() => {
+        try {
+          return JSON.stringify(x, null, 2)
+        } catch {
+          return String(x)
+        }
+      })()
 
-const logger: {
-  success: LoggerMethod
-  warn: LoggerMethod
-  error: LoggerMethod
-  info: LoggerMethod
-} = {
-  success: (msg) => console.log(`✅ ${msg}`.green),
-  warn: (msg) => console.warn(`⚠️  ${msg}`.yellow),
-  error: (msg) => console.error(`❌ ${msg}`.red),
-  info: (msg) => console.info(`ℹ️  ${msg}`.cyan),
+const logger = {
+  success: (msg: LogInput) => console.log(`✅ ${fmt(msg)}`.green),
+  warn: (msg: LogInput) => console.warn(`⚠️  ${fmt(msg)}`.yellow),
+  error: (msg: LogInput) => console.error(`❌ ${fmt(msg)}`.red),
+  info: (msg: LogInput) => console.info(`ℹ️  ${fmt(msg)}`.cyan),
 }
-
 export default logger

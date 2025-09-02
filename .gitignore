@@ -149,3 +149,6 @@ functions/node_modules/
 # Image optimizer caches
 .cache-loader/
 **/.cache-loader/
+
+# DB dumps
+*.dump

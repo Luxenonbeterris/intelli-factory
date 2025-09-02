@@ -5,6 +5,7 @@ import express from 'express'
 import authRoutes from './routes/auth.routes'
 import customerRequestRoutes from './routes/customerRequest.routes'
 import locationRoutes from './routes/location.routes'
+import profileRoutes from './routes/profile.routes'
 
 dotenv.config()
 
@@ -45,6 +46,7 @@ app.options(/.*/, cors(corsOptions))
 
 app.use(express.json())
 
+app.use('/api/profile', profileRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/customer/requests', customerRequestRoutes)
 app.use('/api', locationRoutes)

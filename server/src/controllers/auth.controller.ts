@@ -9,6 +9,7 @@ import {
   createVerificationToken,
   findValidVerification,
 } from '../services/verificationService'
+import { auditSafe } from '../utils/audit-safe'
 import { signToken } from '../utils/jwt'
 
 export async function register(req: Request, res: Response): Promise<void> {
@@ -61,6 +62,14 @@ export async function register(req: Request, res: Response): Promise<void> {
     },
   })
 
+  auditSafe(prisma, req, {
+    action: 'ACCOUNT_REGISTERED',
+    userId: user.id,
+    targetType: 'User',
+    targetId: String(user.id),
+    metadata: { email },
+  })
+
   const token = await createVerificationToken(user.id, 30)
   await mailQueue.add(
     'sendVerification',
@@ -89,15 +98,39 @@ export async function verifyEmail(req: Request, res: Response): Promise<void> {
 
     const vt = await findValidVerification(token)
     if (!vt) {
+      // optional audit on invalid token
+      auditSafe(prisma, req, {
+        action: 'LOGIN_FAILURE',
+        targetType: 'VerificationToken',
+        targetId: token.slice(0, 8) + '…', // don’t log full token
+        metadata: { reason: 'invalid_or_expired_verification_token' },
+      })
       res.status(400).send('Неверный или просроченный токен')
       return
     }
 
-    await prisma.user.update({
-      where: { id: vt.userId },
-      data: { emailVerified: true },
+    // do the state change atomically
+    await prisma.$transaction(async (trx) => {
+      await trx.user.update({
+        where: { id: vt.userId },
+        data: { emailVerified: true },
+      })
+      await consumeVerification(vt.id) // adjust: pass trx if your function supports it
     })
-    await consumeVerification(vt.id)
+
+    // (optional) fetch email for metadata; if you already have it, skip this query
+    const verifiedUser = await prisma.user.findUnique({
+      where: { id: vt.userId },
+      select: { id: true, email: true },
+    })
+
+    auditSafe(prisma, req, {
+      action: 'EMAIL_VERIFIED',
+      userId: vt.userId,
+      targetType: 'User',
+      targetId: String(vt.userId),
+      metadata: { email: verifiedUser?.email },
+    })
 
     res.send('Email подтверждён успешно!')
   } catch (err) {
@@ -108,23 +141,53 @@ export async function verifyEmail(req: Request, res: Response): Promise<void> {
 
 export async function login(req: Request, res: Response): Promise<void> {
   const { email, password } = req.body
-  const user = await prisma.user.findUnique({ where: { email } })
 
+  const user = await prisma.user.findUnique({ where: { email } })
   if (!user) {
+    auditSafe(prisma, req, {
+      action: 'LOGIN_FAILURE',
+      targetType: 'User',
+      targetId: 'unknown',
+      metadata: { emailAttempted: email, reason: 'user_not_found' },
+    })
     res.status(401).json({ error: 'Invalid credentials' })
     return
   }
 
   const valid = await bcrypt.compare(password, user.password)
   if (!valid) {
+    auditSafe(prisma, req, {
+      action: 'LOGIN_FAILURE',
+      userId: user.id, // subject (known)
+      targetType: 'User',
+      targetId: String(user.id),
+      metadata: { emailAttempted: email, reason: 'bad_password' },
+    })
     res.status(401).json({ error: 'Invalid credentials' })
     return
   }
 
   if (!user.emailVerified) {
+    auditSafe(prisma, req, {
+      action: 'LOGIN_FAILURE',
+      userId: user.id,
+      targetType: 'User',
+      targetId: String(user.id),
+      metadata: { reason: 'email_not_verified' },
+    })
     res.status(403).json({ error: 'Email not verified. Please check your inbox.' })
     return
   }
+
+  // Success
+  auditSafe(prisma, req, {
+    action: 'LOGIN_SUCCESS',
+    userId: user.id, // subject
+    // actorId auto-fills from req.auth later in other routes; here it's anonymous pre-issue
+    targetType: 'User',
+    targetId: String(user.id),
+    metadata: { email },
+  })
 
   const token = signToken({ userId: user.id })
 

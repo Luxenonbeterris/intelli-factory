@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProfile, loginUser } from '../api/auth'
-import { useAuthStore } from '../store/authStore' // если без Zustand — храните в Context
+import { useAuthStore } from '../store/authStore'
 
 export function useAuth() {
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export function useAuth() {
 
   const login = async (
     { email, password }: { email: string; password: string },
-    redirectTo: string = '/' // <- хотим домой после логина
+    redirectTo: string = '/'
   ) => {
     setLoading(true)
     setError(null)
@@ -23,11 +23,9 @@ export function useAuth() {
       localStorage.setItem('token', token)
       setToken(token)
 
-      // подтянем профиль, положим в стор
       const user = await getProfile(token)
       setAuth({ user, token })
 
-      // 🎯 редирект на домашнюю
       navigate(redirectTo, { replace: true })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed')

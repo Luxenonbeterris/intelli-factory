@@ -5,6 +5,8 @@ declare global {
   namespace Express {
     interface Request {
       user?: Omit<User, 'password' | 'createdAt'>
+      id?: string
+      auth?: { userId: number }
     }
   }
 }

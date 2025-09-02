@@ -14,28 +14,50 @@ enum Role {
   MANAGER
 }
 
+enum AuditAction {
+  PROFILE_VIEW
+  PROFILE_UPDATE
+  EMAIL_CHANGE_REQUEST
+  EMAIL_CHANGE_CONFIRM
+  PASSWORD_CHANGE
+  PASSWORD_RESET_REQUEST
+  PASSWORD_RESET_CONFIRM
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  ACCOUNT_REGISTERED
+  EMAIL_VERIFICATION_SENT
+  EMAIL_VERIFIED
+}
+
+enum ActorType {
+  USER
+  SYSTEM
+  EXTERNAL
+}
+
 model User {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
-  password       String
-  name           String?
-  role           Role?
-  emailVerified  Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt DateTime @updatedAt 
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  name          String?
+  role          Role?
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  countryId      Int?
-  regionId       Int?
-  street         String?                     
-  postalCode     String?                     
+  countryId  Int?
+  regionId   Int?
+  street     String?
+  postalCode String?
 
-  country        Country? @relation(fields: [countryId], references: [id])
-  region         Region?  @relation(fields: [regionId], references: [id])
+  country Country? @relation(fields: [countryId], references: [id])
+  region  Region?  @relation(fields: [regionId], references: [id])
 
   requests           CustomerRequest[]
   factoryResponses   FactoryResponse[]
   logisticResponses  LogisticResponse[]
   logs               AuditLog[]
+  actorLogs          AuditLog[]          @relation("ActorToLogs")
   categoryLinks      CategoryToUser[]
   verificationTokens VerificationToken[]
 
@@ -65,17 +87,17 @@ model CustomerRequest {
 }
 
 model FactoryResponse {
-  id            Int      @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   userId        Int
-  user          User     @relation(fields: [userId], references: [id])
+  user          User            @relation(fields: [userId], references: [id])
   requestId     Int
   request       CustomerRequest @relation(fields: [requestId], references: [id])
   price         Float
   currency      String
   estimatedDays Int
   location      String?
-  isArchived    Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  isArchived    Boolean         @default(false)
+  createdAt     DateTime        @default(now())
 
   logisticResponses LogisticResponse[]
   compiledOffers    CompiledOffer[]
@@ -84,28 +106,50 @@ model FactoryResponse {
 }
 
 model LogisticResponse {
-  id                Int      @id @default(autoincrement())
+  id                Int             @id @default(autoincrement())
   userId            Int
-  user              User     @relation(fields: [userId], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
   factoryResponseId Int
   factoryResponse   FactoryResponse @relation(fields: [factoryResponseId], references: [id])
   etaDays           Int
   deliveryCost      Float
-  isArchived        Boolean  @default(false)
-  createdAt         DateTime @default(now())
+  isArchived        Boolean         @default(false)
+  createdAt         DateTime        @default(now())
 
   compiledOffers CompiledOffer[]
 
   @@index([factoryResponseId])
 }
 
+model AuditLog {
+  id         Int         @id @default(autoincrement())
+  userId     Int?
+  actorId    Int?
+  actorType  ActorType   @default(USER)
+  action     AuditAction
+  targetType String?
+  targetId   String?
+  ip         String?
+  userAgent  String?
+  requestId  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  user  User? @relation(fields: [userId], references: [id])
+  actor User? @relation("ActorToLogs", fields: [actorId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([actorType, createdAt])
+}
+
 model CompiledOffer {
-  id                  Int      @id @default(autoincrement())
-  factoryResponseId   Int
-  factoryResponse     FactoryResponse @relation(fields: [factoryResponseId], references: [id])
-  logisticResponseId  Int
-  logisticResponse    LogisticResponse @relation(fields: [logisticResponseId], references: [id])
-  createdAt           DateTime @default(now())
+  id                 Int              @id @default(autoincrement())
+  factoryResponseId  Int
+  factoryResponse    FactoryResponse  @relation(fields: [factoryResponseId], references: [id])
+  logisticResponseId Int
+  logisticResponse   LogisticResponse @relation(fields: [logisticResponseId], references: [id])
+  createdAt          DateTime         @default(now())
 
   finalOffer FinalOffer?
 
@@ -113,35 +157,24 @@ model CompiledOffer {
 }
 
 model FinalOffer {
-  id              Int      @id @default(autoincrement())
-  compiledOfferId Int      @unique
+  id              Int           @id @default(autoincrement())
+  compiledOfferId Int           @unique
   compiledOffer   CompiledOffer @relation(fields: [compiledOfferId], references: [id])
   finalEtaDays    Int
   finalPrice      Decimal
-  margin          Decimal   @default(0.0) 
+  margin          Decimal       @default(0.0)
   currency        String
   finalNote       String?
-  confirmed       Boolean   @default(false)
-  createdAt       DateTime  @default(now())
+  confirmed       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
 }
 
 model Category {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique
+  id       Int               @id @default(autoincrement())
+  name     String            @unique
   requests CustomerRequest[]
 
   userLinks CategoryToUser[]
-}
-
-model AuditLog {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  type      String
-  message   String
-  createdAt DateTime @default(now())
-
-  @@index([userId])
 }
 
 model CategoryToUser {
@@ -164,12 +197,13 @@ model Country {
 }
 
 model CountryTranslation {
-  id        Int     @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   countryId Int
-  lang      String 
+  lang      String
   name      String
 
   country Country @relation(fields: [countryId], references: [id])
+
   @@unique([countryId, lang])
 }
 
@@ -184,26 +218,27 @@ model Region {
 }
 
 model RegionTranslation {
-  id       Int     @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   regionId Int
   lang     String
   name     String
 
   region Region @relation(fields: [regionId], references: [id])
+
   @@unique([regionId, lang])
 }
 
 model VerificationToken {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
-  tokenHash String   @unique               
-  type      String                         
-  payload   Json?                          
+  tokenHash String    @unique
+  type      String
+  payload   Json?
   expiresAt DateTime
-  createdAt DateTime @default(now())
-  usedAt    DateTime?                      
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId, type])
   @@index([expiresAt])
